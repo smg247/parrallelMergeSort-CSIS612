@@ -3,10 +3,10 @@ package com.stephengoeddel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Sorter<T extends Comparable> implements Runnable {
+public class SorterWorker<T extends Comparable> implements Runnable {
     private List<T> allElements;
 
-    public Sorter(List<T> elements) {
+    public SorterWorker(List<T> elements) {
         this.allElements = elements;
     }
 
