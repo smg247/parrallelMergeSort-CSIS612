@@ -1,12 +1,13 @@
 package com.stephengoeddel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
 public class Main {
-    private static int NUMBER_OF_THREADS = 2;
+    private static int NUMBER_OF_THREADS = 12;
     private static int NUMBER_OF_ELEMENTS = 1000000;
 
     public static void main(String[] args) throws InterruptedException {
@@ -14,12 +15,17 @@ public class Main {
         List<Integer> randomIntList = randomIntegerList(NUMBER_OF_ELEMENTS);
         List<Integer> nonParallelResult = benchmarkNonParallelVersion(new ArrayList<>(randomIntList));
         List<Integer> parallelResult = benchmarkParallelVersion(new ArrayList<>(randomIntList));
-        System.out.println("Safety check, did both produce the same result? " +  nonParallelResult.equals(parallelResult));
+
+        assert nonParallelResult.equals(parallelResult); // Safety check, did both produce the same result?
+        List<Integer> javaSortedResults = new ArrayList<>(nonParallelResult);
+        Collections.sort(javaSortedResults);
+        assert nonParallelResult.equals(javaSortedResults); // And make sure it is actually sorted
     }
 
     private static List<Integer> benchmarkNonParallelVersion(List<Integer> randomIntList) throws InterruptedException {
         long startTime = System.currentTimeMillis();
-        SorterWorker<Integer> sorter = new SorterWorker<>(randomIntList);
+        List<Integer> result = new ArrayList<>();
+        Sorter<Integer> sorter = new Sorter<>(randomIntList, result);
         Thread sorterThread = new Thread(sorter);
         sorterThread.run();
         sorterThread.join();
@@ -27,7 +33,7 @@ public class Main {
         System.out.println("Non-Parallel Version: ");
         System.out.println("Sorted: " + randomIntList.size() + " elements in: " + (endTime - startTime) + " millis");
 
-        return sorter.getAllElements();
+        return result;
     }
 
     private static List<Integer> benchmarkParallelVersion(List<Integer> randomIntList) throws InterruptedException {

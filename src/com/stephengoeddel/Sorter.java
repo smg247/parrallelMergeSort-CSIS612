@@ -3,25 +3,24 @@ package com.stephengoeddel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SorterWorker<T extends Comparable> implements Runnable {
-    private List<T> allElements;
+public class Sorter<T extends Comparable> implements Runnable {
+    private List<T> elementsToSort;
+    private List<T> sortedElements;
 
-    public SorterWorker(List<T> elements) {
-        this.allElements = elements;
+    public Sorter(List<T> elementsToSort, List<T> sortedElements) {
+        this.elementsToSort = elementsToSort;
+        this.sortedElements = sortedElements;
     }
 
     @Override
     public void run() {
-        allElements = mergeSort(allElements);
-    }
-
-    public List<T> getAllElements() {
-        return allElements;
+        List<T> newlySortedElements = mergeSort(elementsToSort);
+        sortedElements = merge(newlySortedElements, sortedElements);
     }
 
     private List<T> mergeSort(List<T> elements) {
         if (elements.size() <= 1) {
-            return elements; // A list of 0 or 1 allElements is sorted
+            return elements; // A list of 0 or 1 elements is sorted
         }
 
         List<T> leftElements = new ArrayList<>();
