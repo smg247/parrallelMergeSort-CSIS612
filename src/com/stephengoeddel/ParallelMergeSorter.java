@@ -2,6 +2,7 @@ package com.stephengoeddel;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ParallelMergeSorter<T extends Comparable> {
@@ -19,7 +20,13 @@ public class ParallelMergeSorter<T extends Comparable> {
         List<Thread> threads = new ArrayList<>();
         for (int i = 0; i < numberOfThreads; i++) {
             int startOfSublistIndex = i * itemsPerSublist;
-            int endOfSublistIndex = startOfSublistIndex + itemsPerSublist;
+            int endOfSublistIndex;
+            // We can't leave off elements at the end if the list isn't divisible without remainder
+            if ((i + 1) < numberOfThreads) {
+                endOfSublistIndex = startOfSublistIndex + itemsPerSublist;
+            } else {
+                endOfSublistIndex = elements.size();
+            }
             List<T> sublist = elements.subList(startOfSublistIndex, endOfSublistIndex);
 
             Sorter<T> sorter = new Sorter<>(sublist, result);

@@ -1,6 +1,7 @@
 package com.stephengoeddel;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Sorter<T extends Comparable> implements Runnable {
@@ -15,7 +16,11 @@ public class Sorter<T extends Comparable> implements Runnable {
     @Override
     public void run() {
         List<T> newlySortedElements = mergeSort(elementsToSort);
-        sortedElements = merge(newlySortedElements, sortedElements);
+        mergeWithCurrentResults(newlySortedElements);
+    }
+
+    private synchronized void mergeWithCurrentResults(List<T> newlySortedElements) {
+        mergeWithSortedElements(newlySortedElements);
     }
 
     private List<T> mergeSort(List<T> elements) {
@@ -55,5 +60,18 @@ public class Sorter<T extends Comparable> implements Runnable {
         mergedElements.addAll(rightElements);
 
         return mergedElements;
+    }
+
+    private void mergeWithSortedElements(List<T> elements) {
+        int index = 0;
+        while (index < sortedElements.size() && !elements.isEmpty()) {
+            if (sortedElements.get(index).compareTo(elements.get(0)) > 0) {
+                sortedElements.add(index, elements.remove(0));
+            }
+            index++;
+        }
+
+        // There may be leftover elements to add at the end
+        sortedElements.addAll(elements);
     }
 }

@@ -7,7 +7,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class Main {
-    private static int NUMBER_OF_THREADS = 12;
+    private static int NUMBER_OF_THREADS = 28;
     private static int NUMBER_OF_ELEMENTS = 1000000;
 
     public static void main(String[] args) throws InterruptedException {
@@ -16,10 +16,10 @@ public class Main {
         List<Integer> nonParallelResult = benchmarkNonParallelVersion(new ArrayList<>(randomIntList));
         List<Integer> parallelResult = benchmarkParallelVersion(new ArrayList<>(randomIntList));
 
-        assert nonParallelResult.equals(parallelResult); // Safety check, did both produce the same result?
+        assert nonParallelResult.equals(parallelResult) : "Parallel and Sequential results did not match"; // Safety check, did both produce the same result?
         List<Integer> javaSortedResults = new ArrayList<>(nonParallelResult);
         Collections.sort(javaSortedResults);
-        assert nonParallelResult.equals(javaSortedResults); // And make sure it is actually sorted
+        assert parallelResult.equals(javaSortedResults) : "Parallel and Collections.sort results did not match"; // And make sure it is actually sorted
     }
 
     private static List<Integer> benchmarkNonParallelVersion(List<Integer> randomIntList) throws InterruptedException {
@@ -31,7 +31,7 @@ public class Main {
         sorterThread.join();
         long endTime = System.currentTimeMillis();
         System.out.println("Non-Parallel Version: ");
-        System.out.println("Sorted: " + randomIntList.size() + " elements in: " + (endTime - startTime) + " millis");
+        System.out.println("Sorted: " + result.size() + " elements in: " + (endTime - startTime) + " millis");
 
         return result;
     }
@@ -43,7 +43,7 @@ public class Main {
         long endTime = System.currentTimeMillis();
 
         System.out.println("Parallel Version: ");
-        System.out.println("Sorted: " + NUMBER_OF_ELEMENTS + " elements in: " + (endTime - startTime) + " millis");
+        System.out.println("Sorted: " + result.size() + " elements in: " + (endTime - startTime) + " millis");
 
         return result;
 
